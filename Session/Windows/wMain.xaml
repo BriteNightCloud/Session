@@ -1,0 +1,118 @@
+﻿<Window x:Class="Session.Windows.wMain"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Session.Windows"
+        mc:Ignorable="d"
+        Title="Материалы" Height="450" Width="800" MinWidth="800" MinHeight="450" Loaded="wLoaded" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <Menu Margin="15,0" Grid.Row="0" Background="Transparent">
+            <MenuItem Header="_Файл">
+                <MenuItem Header="_Выход" x:Name="miExit" Click="MenuClick"/>
+            </MenuItem>
+            <MenuItem Header="_Редактировать" SubmenuOpened="MenuOpening">
+                <MenuItem Header="_Добавить материал" x:Name="miAddNew" Click="MenuClick"/>
+                <Separator/>
+                <MenuItem Header="_Редактировать выбранное" x:Name="miEditSelected" Click="MenuClick" IsEnabled="False"/>
+                <MenuItem Header="_Изменить минимальное кол-во" x:Name="miEditMin" Click="MenuClick" IsEnabled="False"/>
+            </MenuItem>
+        </Menu>
+
+        <Grid Grid.Row="1" Margin="15,5,15,15">
+            <Grid.ColumnDefinitions >
+                <ColumnDefinition Width="5.5*"/>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBox x:Name="tbSearch" Height="35" Margin="0,0,15,0" Grid.Column="0" VerticalContentAlignment="Center" Padding="7" 
+                     GotKeyboardFocus="tbSearch_GotKeyboardFocus" LostKeyboardFocus="tbSearch_LostKeyboardFocus" TextChanged="tbSearch_Search" />
+
+            <ComboBox x:Name="cbSort" SelectedIndex="0" Height="35" Margin="0,0,15,0" Grid.Column="1" Padding="9" SelectionChanged="cbSortFilter_SelectionChanged">
+                <ComboBoxItem Visibility="Collapsed" Content="Сортировка"/>
+                <ComboBoxItem Content=""/>
+                <ComboBoxItem Content="А-я"/>
+                <ComboBoxItem Content="Я-а"/>
+                <ComboBoxItem Content="Высший остаток"/>
+                <ComboBoxItem Content="Низший остаток"/>
+                <ComboBoxItem Content="Высшая цена"/>
+                <ComboBoxItem Content="Низшая цена"/>
+            </ComboBox>
+
+            <ComboBox x:Name="cbFilter" SelectedIndex="0" Height="35" Grid.Column="2" Padding="9" SelectionChanged="cbSortFilter_SelectionChanged" BorderThickness="1">
+                <ComboBoxItem Visibility="Collapsed" Content="Все типы"/>
+                <ComboBoxItem Content=""/>
+            </ComboBox>
+        </Grid>
+
+        <Grid Margin="25,0,40,0" x:Name="width" Height="0" Grid.Row="1" IsEnabled="False"/>
+
+        <ListView x:Name="lvMain" Grid.Row="2" SelectionMode="Multiple" SelectionChanged="lvMain_SelectionChanged" 
+                  Grid.ColumnSpan="3" BorderThickness="0" Margin="15,0" ScrollViewer.VerticalScrollBarVisibility="auto" 
+                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" Background="White">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="Margin" Value="0,0,0,5"/>
+                    <Setter Property="BorderThickness" Value="1"/>
+                    <Setter Property="BorderBrush" Value="Black"/>
+                    <Setter Property="Background" Value="{Binding backColor}"/>
+                </Style>
+            </ListView.ItemContainerStyle>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Width="{Binding ElementName=width,Path=ActualWidth}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="110"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="115"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Image Source="{Binding logoPath}" Height="100" Grid.Column="0"/>
+
+                        <StackPanel Orientation="Vertical" Grid.Column="1" VerticalAlignment="Center" Margin="10,-5,0,0">
+                            <TextBlock FontSize="18">
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="{}{0} | {1}">
+                                        <Binding Path="MaterialType.Title"/>
+                                        <Binding Path="Title"/>
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+
+                            <TextBlock Text="{Binding MinCount,StringFormat='{}Минимальное количество: {0} шт'}"/>
+
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Поставщики: " FontWeight="Bold" />
+                                <TextBlock Text="{Binding SupArr}"/>
+                            </StackPanel>
+
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Минимальная закупка: " FontWeight="Bold"/>
+                                <TextBlock Text="{Binding MinBuyCount}"/>
+                                <TextBlock Text=" | Цена: " FontWeight="Bold"/>
+                                <TextBlock Text="{Binding MinBuyCost}"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <TextBlock x:Name="discount" HorizontalAlignment="Right" Text="{Binding CountInStock,StringFormat='{}Остаток: {0} шт'}" Grid.Column="2" Margin="0,25,0,0"/>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <StackPanel Grid.Row="3" Margin="3" Orientation="Horizontal">
+            <TextBlock x:Name="lvCount"/>
+            <TextBlock x:Name="lvSelCount" Margin="5,0" Text="| Выделенно: 0"/>
+            <Button Padding="5,0" Content="Снять все" Click="DeselectAll"/>
+        </StackPanel>
+        <StackPanel x:Name="spPages" Grid.Row="3" Margin="5,0" HorizontalAlignment="Right" Orientation="Horizontal"/>
+    </Grid>
+</Window>
